@@ -12,4 +12,15 @@ class producto extends Model
     {
         return $this->hasMany(detalle_compra::class);
     }
+    protected $fillable = [
+        'nombre',
+        'modelo',
+        'descripcion',
+        'precio',
+        'activo',
+        'kilometraje',
+        'ruta',
+        'disponibilidad',
+        // Otros campos permitidos en la asignación masiva
+    ];
 }

@@ -15,6 +15,7 @@
     <main>
         <div class="container">
             <div class="table-responsive">
+            
                 <table class="table">
                     <thead>
                         <tr>
@@ -26,6 +27,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                    @if(count($compras) > 0)
                         @foreach($compras as $compra)
                         @foreach($compra->detalle_compra as $detalle)
                         <tr>
@@ -51,8 +53,18 @@
                                 <span class="h3" id="total">Total: </span>
                             </td>
                         </tr>
+                        @else
+                        <tr>
+                            <td colspan="5">
+                                <p style="font-weight: bold; font-size: smaller; text-align: center;">La lista de compras está vacía.</p>
+                            </td>
+
+                        </tr>
+                        @endif
                     </tbody>
+                    
                 </table>
+                
             </div>
             <div class="row">
                 <div class="col-md-5 offset-md-7 d-grid gap-2">

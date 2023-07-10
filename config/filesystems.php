@@ -38,11 +38,11 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'root' => public_path('resources/views/imagenes/productos/1'),
+            'url' => env('APP_URL').'resources/views/imagenes/productos/1',
             'visibility' => 'public',
-            'throw' => false,
         ],
+        
 
         's3' => [
             'driver' => 's3',

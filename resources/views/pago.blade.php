@@ -16,7 +16,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body> 
-    
+    @if(\Session::has('error'))
+        <div class="alert alert-danger">{{ \Session::get('error') }}</div>
+        {{ \Session::forget('error') }}
+    @endif
+    @if(\Session::has('success'))
+        <div class="alert alert-success">{{ \Session::get('success') }}</div>
+        {{ \Session::forget('success') }}
+    @endif
     <!--contenido-->
     <main>
         <div class="container mt-4">
@@ -25,11 +32,19 @@
                     <h4> Detalles de pago</h4>      
                     <ul class="flex border-b lg:mx-56 mt-4">
                         <li class="-mb-px mr-1">
+                            @if($compras && count($compras->detalle_compra) > 0)
                             <button class="btn btn-outline-success">Pagar con Tarjeta de Crédito</button>
+                            @else
+                                <button class="btn btn-outline-success" disabled>Pagar con Tarjeta de Crédito</button>
+                            @endif  
                         </li>
 </br>
                         <li class="mr-1">
-                            <button class="btn btn-outline-success"><a href="{{url('/paypal/pay')}}">Pagar con Paypal</a></button>
+                            @if($compras && count($compras->detalle_compra) > 0)
+                                <button class="btn btn-outline-success"><a href="{{url('/paypal/pay')}}">Pagar con Paypal</a></button>
+                            @else
+                                <button class="btn btn-outline-success" disabled>Pagar con Paypal</button>
+                            @endif                        
                         </li>
                     </ul>
                 </div>
@@ -47,8 +62,8 @@
                         </thead>
                         
                         <tbody>
-                  
-                        @foreach($compras->detalle_compra as $detalle)
+                        @if($compras && count($compras->detalle_compra) > 0)
+                            @foreach($compras->detalle_compra as $detalle)
                             <tr>
                                 
                                 <td>{{$detalle->nombre}}</td>
@@ -62,9 +77,18 @@
                             
                             <tr>
                                 <td colspan="2">
-                                    <span class="h3 text-end" id="total">Total: </span>{{$compras->total}}
+                                    <span class="h3 text-end" id="total">Total: </span>
+                                    <span class="h3 text-end">      ${{ number_format($compras->total, 2, '.', ',') }}</span>
                                 </td>
                             </tr>
+                            @else
+                            <tr>
+                                <td colspan="5">
+                                    <p style="font-weight: bold; font-size: smaller; text-align: center;">La lista de compras está vacía.</p>
+                                </td>
+
+                            </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>

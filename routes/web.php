@@ -7,6 +7,8 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\CompraController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PagoController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,11 +28,15 @@ Route::get('/productos', [ProductoController::class,'mostrarCatalogo'])->name('p
 
 
 Route::get('/mostrarImagen/{url}', [ProductoController::class,'mostrarImagen']);
+
+
+
 Route::get('/detallesAuto/{id}', [ProductoController::class,'detallesAuto'])->name('detallesAuto');
 
 Route::get('/login', function () {return view('login');})->name('login')->middleware('guest');
 Route::get('/registro', function () {return view('registro');})->name('registro');
 Route::get('/admin', function () {return view('admin');})->name('admin');
+Route::get('/pago', function () {return view('pago');})->name('pago');
 
 
  
@@ -52,8 +58,22 @@ Route::delete('/carrito/{id}', [CompraController::class, 'eliminarProducto'])->n
 Route::get('/carrito/cantidad', 'CompraController@getCantidadProductosCarrito')->name('carrito.cantidad');
 Route::post('/actualizarTotal', [CompraController::class, 'actualizarTotal'])->name('compra.actualizarTotal');
 
-Route::get('/paypal/pay', [PaymentController::class, 'payWithPayPal'])->name('/paypal/pay');
-Route::get('/paypal/status', [PaymentController::class, 'payPalStatus'])->name('/paypal/status');
+
+// Ruta para crear el pago
+Route::get('/paypal/pay', [PagoController::class, 'createPayment'])->name('paypal.create-payment');
+
+// Ruta para ejecutar el pago
+Route::get('/paypal/status', [PagoController::class, 'executePayment'])->name('paypal.status');
+Route::get('/pago', [PagoController::class, 'compraUsuario'])->name('pago');
+
+
+
+Route::get('/admin', [AdminController::class, 'admin'])->name('admin');
+Route::post('/admin/store', [AdminController::class, 'store'])->name('admin.store');
+Route::get('/create',[AdminController::class,'create']);
+Route::get('/update/{id}', [AdminController::class, 'showUpdateForm'])->name('update.form');
+Route::put('/update/{id}', [AdminController::class, 'update'])->name('update');
+Route::delete('/productos/{id}', [AdminController::class, 'eliminar'])->name('eliminar');
 
 
 

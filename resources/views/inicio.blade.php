@@ -34,7 +34,8 @@
         <form>
         <div class="col">
             <div class="card shadow-sm">
-                <img src="/mostrarImagen/{{$producto->ruta}}">
+                <img src="{{ asset('/mostrarImagen/' . $producto->ruta) }}" alt="Imagen del producto">
+
                 <div class="card-body">
                     <h5 class="card-title">{{$producto->nombre}}</h5>
                     <p class="card-text">${{$producto->precio}}</p>
@@ -52,7 +53,9 @@
         <form method="post"  action="{{ route('carritoCompra') }}">
         <div class="col">
             <div class="card shadow-sm">
-                <img src="/mostrarImagen/{{$producto->ruta}}">
+                <img src="{{ asset('/mostrarImagen/' . $producto->ruta) }}" alt="Imagen del producto">
+
+
                 <input type="hidden" name="id" value="{{$producto->id}}">
                 <input type="hidden" name="nombre" value="{{$producto->nombre}}">
                 <input type="hidden" name="precio" value="{{$producto->precio}}">

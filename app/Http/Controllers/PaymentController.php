@@ -11,8 +11,9 @@ use PayPal\Api\PaymentExecution;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
 use PayPal\Auth\OAuthTokenCredential;
-use PayPal\Exception\PayPalConnectionException;
 use PayPal\Rest\ApiContext;
+use PayPal\Exception\PayPalConnectionException;
+
 
 
 
@@ -70,7 +71,6 @@ class PaymentController extends Controller
             ->setPayer($payer)
             ->setTransactions(array($transaction))
             ->setRedirectUrls($redirectUrls);
-
         try {
             $payment->create($this->apiContext);
             return redirect()->away($payment->getApprovalLink());
@@ -79,19 +79,23 @@ class PaymentController extends Controller
         }
     }
 
-    public function payPalStatus(Request $request)
-    {
-        $paymentId = $request->input('paymentId');
-        $payerId = $request->input('PayerID');
-        $token = $request->input('token');
+ 
 
-        if (!$paymentId || !$payerId || !$token) {
-            $status = 'Lo sentimos! El pago a través de PayPal no se pudo realizar.';
-            return redirect('/paypal/failed')->with(compact('status'));
-        }
+// ...
 
+public function payPalStatus(Request $request)
+{
+    $paymentId = $request->input('paymentId');
+    $payerId = $request->input('PayerID');
+    $token = $request->input('token');
+
+    if (!$paymentId || !$payerId || !$token) {
+        $status = 'Lo sentimos! El pago a través de PayPal no se pudo realizar.';
+        return redirect('/paypal/failed')->with(compact('status'));
+    }
+
+    try {
         $payment = Payment::get($paymentId, $this->apiContext);
-
         $execution = new PaymentExecution();
         $execution->setPayerId($payerId);
 
@@ -99,11 +103,21 @@ class PaymentController extends Controller
         $result = $payment->execute($execution, $this->apiContext);
 
         if ($result->getState() === 'approved') {
-            $status = 'Gracias! El pago a través de PayPal se ha ralizado correctamente.';
-            return redirect('/results')->with(compact('status'));
-        }
+            $transaction = $result->getTransactions()[0];
+            $relatedResources = $transaction->getRelatedResources();
+            $sale = $relatedResources[0]->getSale();
+            // Aquí puedes acceder a las propiedades de $sale según tus necesidades, pero no hay una función getTransactionFee() disponible
 
-        $status = 'Lo sentimos! El pago a través de PayPal no se pudo realizar.';
-        return redirect('/results')->with(compact('status'));
+            $status = 'Gracias! El pago a través de PayPal se ha realizado correctamente.';
+            return redirect('/pago')->with(compact('status'));
+        }
+    } catch (PayPalConnectionException $ex) {
+        $status = 'Lo sentimos! Hubo un problema con el pago a través de PayPal.';
+        return redirect('/pago')->with(compact('status'));
     }
+
+    $status = 'Lo sentimos! El pago a través de PayPal no se pudo realizar.';
+    return redirect('/pago')->with(compact('status'));
+}
+
 }

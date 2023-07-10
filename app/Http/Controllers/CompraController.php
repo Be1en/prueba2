@@ -15,24 +15,34 @@ class CompraController extends Controller
     public function compraUsuario()
     {
         $user = Auth::user();
-        $compras = $user->compra()->with('detalle_compra')->get();
-
+        $compras = $user->compra()->with('detalle_compra')->where('status', 'PENDING')->get();
+        if (!$compras) {
+            // No se encontró ninguna compra pendiente
+            return redirect('/pago')->with('error', 'No tienes ninguna compra pendiente.');
+        }
         return view('checkout', compact('compras'));
 
     }
-    public function compraUsuarioPago()
-    {
-        $user = Auth::user();
-        $compras = $user->compra()->with('detalle_compra')->first();
-        //dd($compras);
-        $total=0;
-        foreach($compras->detalle_compra as $compra){
-            $total = $total+$compra->precio*($compra->cantidad);
-        }
-        $compras->total=$total;
-        return view('pago', compact('compras'));
 
+    public function compraUsuarioPago()
+{
+    $user = Auth::user();
+    $compras = $user->compra()->with('detalle_compra')->where('status', 'PENDING')->first();
+    
+    if (!$compras) {
+        // No se encontró ninguna compra pendiente
+        return redirect('/pago')->with('error', 'No tienes ninguna compra pendiente.');
     }
+
+    $total = 0;
+    foreach ($compras->detalle_compra as $compra) {
+        $total += $compra->precio * $compra->cantidad;
+    }
+    $compras->total = $total;
+
+    return view('pago', compact('compras'));
+}
+
     
     public function carritoCompra(Request $request)
 {

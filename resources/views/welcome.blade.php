@@ -52,7 +52,9 @@
                         </a>
                         @else
                         <a href="{{route('compraUsuario')}}" class="btn btn-primary btn-sm me-2">
-                            <i class="fas fa-shopping-cart"></i> Carrito <span class="badge" style="padding: 0.25rem 0.5rem; border: 2px solid #fff;">{{ Auth::check() ? App\Models\compra::where('id_usuario', Auth::user()->id)->count() : 0 }}</span>
+                        <i class="fas fa-shopping-cart"></i> Carrito <span class="badge" style="padding: 0.25rem 0.5rem; border: 2px solid #fff;">{{ Auth::check() ? App\Models\detalle_compra::whereHas('compra', function ($query) {
+    $query->where('id_usuario', Auth::user()->id)->where('status', 'PENDING');
+})->count() : 0 }}</span>
 
                         </a>
                         @csrf

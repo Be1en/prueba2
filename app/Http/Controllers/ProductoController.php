@@ -23,7 +23,8 @@ class ProductoController extends Controller
     }
     public function mostrarImagen($url)
     {
-        $imagen = Storage::disk('local')->get('/productos/1/' . $url);
+        $imagen = public_path('imagenes/productos/1/' . $url);
+
         return Image::make($imagen)->response();
     }
     public function detallesAuto($id){
